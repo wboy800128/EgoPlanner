@@ -36,6 +36,42 @@ make
 
 ---
 
+## 📊 可视化轨迹（在本仓库）
+
+仓库包含一个简单的 Python 绘图脚本用于可视化规划结果：`scripts/plot_trajectory.py`。
+
+步骤：
+
+1. 在仓库根或使用 VS Code 任务先完成构建并运行可执行，生成轨迹文件：
+
+```bash
+# 在仓库根执行（或使用 VS Code -> Run Task）
+mkdir -p build
+cmake -S . -B build
+cmake --build build --config Release
+
+# 运行可执行以生成 trajectory.csv（生成在 build/）
+./build/Release/EgoPlanCore.exe
+```
+
+2. 使用系统 `python`（建议进入项目虚拟环境 `.venv`）运行绘图脚本：
+
+```bash
+# 推荐：使用虚拟环境
+python -m venv .venv
+.venv\Scripts\activate   # Windows
+pip install -U pip
+pip install matplotlib
+
+# 运行绘图脚本（脚本会读取 build/trajectory.csv 并输出 trajectory.png）
+python scripts/plot_trajectory.py
+```
+
+3. 输出文件： `build/trajectory.png`（以及 HTML 交互图，如果脚本生成）。
+
+如果你想在 VS Code 中直接运行：打开命令面板（Ctrl+Shift+P）-> Run Task -> 选择 `CMake: Build Release` 或 `Plot: Trajectory (Python)`。
+
+
 ## 🖼️ 运行效果 (Demo)
 
 下图展示了算法规划出的二维平滑轨迹：
