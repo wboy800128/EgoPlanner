@@ -1,0 +1,22 @@
+# Build artifacts
+/build/
+
+# Python virtual environment
+/.venv/
+
+# VS Code workspace settings
+/.vscode/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Compiled binaries and objects
+*.exe
+*.dll
+*.obj
+*.pdb
+
+# OS files
+.DS_Store
+Thumbs.db
