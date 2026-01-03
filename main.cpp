@@ -6,13 +6,12 @@
 #include <iostream> 
 #include <string>    
 #include <ios>     
+#include <vector>
+#include <fstream>
 
 #include "planner_interface.h"
-#include "./planner/matplotlib-cpp/matplotlibcpp.h"
 
 using namespace ego_planner;
-
-namespace plt = matplotlibcpp;
 
 
 int main()
@@ -88,39 +87,42 @@ int main()
     std::vector<PathPoint> plan_traj_res;
     plan->getLocalPlanTrajResults(plan_traj_res);
     
-    local_plan_x.clear();
-    local_plan_y.clear();
-
-    for(int i = 0; i < plan_traj_res.size(); i++)
-    {
-        local_plan_x.push_back(plan_traj_res[i].x);
-        local_plan_y.push_back(plan_traj_res[i].y);
-    }
-
-    //show
-    for(int i = 0; i < obstacle.size();i++)
-    {
-        obs_x.push_back(obstacle[i].x);
-        obs_y.push_back(obstacle[i].y);
-        color.push_back(1.0);
-    }
-
-    std::map<std::string, std::string> keywords1;
-    keywords1.insert(std::pair<std::string, std::string>("label", "globaltraj"));
-    keywords1.insert(std::pair<std::string, std::string>("linewidth", "3.5"));
-    plt::plot(global_x, global_y, keywords1);
-
-    std::map<std::string, std::string> keywords2;
-    keywords2.insert(std::pair<std::string, std::string>("label", "localtraj"));
-    keywords2.insert(std::pair<std::string, std::string>("linewidth", "3.5"));
-    plt::plot(local_plan_x, local_plan_y, keywords2);
-  
+    // 输出规划结果到控制台
+    std::cout << "Ego Planner Results!" << std::endl;
+    std::cout << "Global trajectory points: " << global_plan_traj.size() << std::endl;
+    std::cout << "Local optimized trajectory points: " << plan_traj_res.size() << std::endl;
+    std::cout << "Obstacles: " << obstacle.size() << std::endl;
     
-    double point_size = 100.0;
-    plt::scatter_colored(obs_x, obs_y,color,point_size,{{"cmap", "viridis"}});
-    plt::legend();
-    plt::title("Ego Planner Results!");
-    plt::show();
+    // 输出部分规划结果
+    std::cout << "\nLocal trajectory sample points: " << std::endl;
+    for(int i = 0; i < std::min(10, (int)plan_traj_res.size()); i++)
+    {
+        std::cout << "Point " << i << ": x=" << plan_traj_res[i].x << ", y=" << plan_traj_res[i].y << std::endl;
+    }
+    
+    if(plan_traj_res.size() > 10)
+    {
+        std::cout << "... and " << plan_traj_res.size() - 10 << " more points" << std::endl;
+    }
+
+    // 将结果写入 CSV 以便可视化 (type,x,y) -- type: G=global, L=local, O=obstacle
+    std::ofstream ofs("trajectory.csv");
+    if(ofs.is_open()){
+        ofs << "type,x,y\n";
+        for(const auto &p: global_plan_traj){
+            ofs << "G," << p.x << "," << p.y << "\n";
+        }
+        for(const auto &p: plan_traj_res){
+            ofs << "L," << p.x << "," << p.y << "\n";
+        }
+        for(const auto &o: obstacle){
+            ofs << "O," << o.x << "," << o.y << "\n";
+        }
+        ofs.close();
+        std::cout << "Wrote trajectory to trajectory.csv\n";
+    } else {
+        std::cerr << "Failed to write trajectory.csv" << std::endl;
+    }
 
 
     return 0;

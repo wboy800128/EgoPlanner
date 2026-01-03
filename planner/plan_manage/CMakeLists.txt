@@ -5,8 +5,9 @@ include_directories(../path_searching/include)
 include_directories(../plan_env/include)
 include_directories(./include/plan_manage)
 include_directories(../include)
+include_directories(../../third_party/eigen)
 
-link_directories(/usr/include/python2.7)
+
 
 add_library(    ego_planner  STATIC
                 src/planner_interface.cpp

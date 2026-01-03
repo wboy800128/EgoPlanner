@@ -899,8 +899,8 @@ namespace ego_planner
       flag_occ = false;
       success = false;
 
-      double q[variable_num_];
-      memcpy(q, cps_.points.data() + 3 * start_id, variable_num_ * sizeof(q[0]));
+      std::vector<double> q(variable_num_);
+      memcpy(q.data(), cps_.points.data() + 3 * start_id, variable_num_ * sizeof(q[0]));
 
       lbfgs::lbfgs_parameter_t lbfgs_params;
       lbfgs::lbfgs_load_default_parameters(&lbfgs_params);
@@ -910,7 +910,7 @@ namespace ego_planner
 
       /* ---------- optimize ---------- */
      // t1 = ros::Time::now();
-      int result = lbfgs::lbfgs_optimize(variable_num_, q, &final_cost, BsplineOptimizer::costFunctionRebound, NULL, BsplineOptimizer::earlyExit, this, &lbfgs_params);
+      int result = lbfgs::lbfgs_optimize(variable_num_, q.data(), &final_cost, BsplineOptimizer::costFunctionRebound, NULL, BsplineOptimizer::earlyExit, this, &lbfgs_params);
      // t2 = ros::Time::now();
      // double time_ms = (t2 - t1).toSec() * 1000;
      // double total_time_ms = (t2 - t0).toSec() * 1000;
@@ -988,10 +988,10 @@ namespace ego_planner
     int end_id = this->cps_.points.cols() - order_;
     variable_num_ = 3 * (end_id - start_id);
 
-    double q[variable_num_];
+    std::vector<double> q(variable_num_);
     double final_cost;
 
-    memcpy(q, cps_.points.data() + 3 * start_id, variable_num_ * sizeof(q[0]));
+    memcpy(q.data(), cps_.points.data() + 3 * start_id, variable_num_ * sizeof(q[0]));
 
     double origin_lambda4 = lambda4_;
     bool flag_safe = true;
@@ -1004,7 +1004,7 @@ namespace ego_planner
       lbfgs_params.max_iterations = 200;
       lbfgs_params.g_epsilon = 0.001;
 
-      int result = lbfgs::lbfgs_optimize(variable_num_, q, &final_cost, BsplineOptimizer::costFunctionRefine, NULL, NULL, this, &lbfgs_params);
+      int result = lbfgs::lbfgs_optimize(variable_num_, q.data(), &final_cost, BsplineOptimizer::costFunctionRefine, NULL, NULL, this, &lbfgs_params);
       if (result == lbfgs::LBFGS_CONVERGENCE ||
           result == lbfgs::LBFGSERR_MAXIMUMITERATION ||
           result == lbfgs::LBFGS_ALREADY_MINIMIZED ||

@@ -10,6 +10,7 @@ include_directories(./planner/plan_env/include)
 include_directories(./planner/plan_manage/include/plan_manage)
 include_directories(./planner/plan_manage/include)
 include_directories(./planner/include)
+include_directories(./third_party/eigen)
 
 add_subdirectory(planner/plan_manage)
 add_subdirectory(planner/bspline_opt)
@@ -22,7 +23,6 @@ target_link_libraries( EgoPlanCore
                        bspline_opt
                        path_searching
                        local_map
-                       python2.7 
                        ego_planner
 
 )

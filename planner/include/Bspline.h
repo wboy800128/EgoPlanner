@@ -66,15 +66,15 @@ struct Bspline_
 
 
 
-  typedef boost::shared_ptr< ::ego_planner::Bspline_<ContainerAllocator> > Ptr;
-  typedef boost::shared_ptr< ::ego_planner::Bspline_<ContainerAllocator> const> ConstPtr;
+  typedef std::shared_ptr< ::ego_planner::Bspline_<ContainerAllocator> > Ptr;
+  typedef std::shared_ptr< ::ego_planner::Bspline_<ContainerAllocator> const> ConstPtr;
 
 }; // struct Bspline_
 
 typedef ::ego_planner::Bspline_<std::allocator<void> > Bspline;
 
-typedef boost::shared_ptr< ::ego_planner::Bspline > BsplinePtr;
-typedef boost::shared_ptr< ::ego_planner::Bspline const> BsplineConstPtr;
+typedef std::shared_ptr< ::ego_planner::Bspline > BsplinePtr;
+typedef std::shared_ptr< ::ego_planner::Bspline const> BsplineConstPtr;
 
 // constants requiring out of line definition
 

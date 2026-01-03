@@ -195,13 +195,14 @@ double SDFMap::getDistWithGradTrilinear(Eigen::Vector3d pos, Eigen::Vector3d& gr
 template <typename F_get_val, typename F_set_val>
 void SDFMap::fillESDF(F_get_val f_get_val, F_set_val f_set_val, int start, int end, int dim)
 {
-  int v[grid_size(dim)];
-  double z[grid_size(dim) + 1];
+  int size = end - start + 1;
+  std::vector<int> v(size);
+  std::vector<double> z(size + 1);
 
   int k = start;
-  v[start] = start;
-  z[start] = -std::numeric_limits<double>::max();
-  z[start + 1] = std::numeric_limits<double>::max();
+  v[start - start] = start;
+  z[start - start] = -std::numeric_limits<double>::max();
+  z[start - start + 1] = std::numeric_limits<double>::max();
 
   for (int q = start + 1; q <= end; q++)
   {
@@ -211,24 +212,24 @@ void SDFMap::fillESDF(F_get_val f_get_val, F_set_val f_set_val, int start, int e
     do
     {
       k--;
-      s = ((f_get_val(q) + q * q) - (f_get_val(v[k]) + v[k] * v[k])) / (2 * q - 2 * v[k]);
-    } while (s <= z[k]);
+      s = ((f_get_val(q) + q * q) - (f_get_val(v[k - start]) + v[k - start] * v[k - start])) / (2 * q - 2 * v[k - start]);
+    } while (s <= z[k - start]);
 
     k++;
 
-    v[k] = q;
-    z[k] = s;
-    z[k + 1] = std::numeric_limits<double>::max();
+    v[k - start] = q;
+    z[k - start] = s;
+    z[k - start + 1] = std::numeric_limits<double>::max();
   }
 
   k = start;
 
   for (int q = start; q <= end; q++)
   {
-    while (z[k + 1] < q)
+    while (z[k - start + 1] < q)
       k++;
-    double val = (q - v[k]) * (q - v[k]) + f_get_val(v[k]);
-    f_set_val(q, val);
+
+    f_set_val(q, sqrt(f_get_val(v[k - start]) + (q - v[k - start]) * (q - v[k - start])));
   }
 }
 

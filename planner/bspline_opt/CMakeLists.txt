@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
 include_directories(../path_searching/include)
 include_directories(../plan_env/include)
 include_directories(include)
+include_directories(../../third_party/eigen)
 
 add_library(    bspline_opt STATIC
                 src/uniform_bspline.cpp 
