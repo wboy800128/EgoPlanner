@@ -36,6 +36,88 @@ make
 
 ---
 
+## 🧭 详细步骤（Windows 可复制命令）
+
+下面给出在 Windows（PowerShell / CMD）环境下的可复制命令，按顺序执行可以完成：配置 -> 构建 -> 运行 -> 创建虚拟环境 -> 安装 matplotlib -> 绘图。
+
+1) PowerShell（推荐）
+
+```powershell
+# 切换到仓库根（如果尚未在仓库根）
+Set-Location D:\GitHub\EgoPlanner
+
+# 1) 使用 CMake 配置并构建（Release）
+cmake -S . -B build
+cmake --build build --config Release
+
+# 2) 运行可执行以生成轨迹 CSV
+.\build\Release\EgoPlanCore.exe
+
+# 3) 创建并激活虚拟环境（如果首次使用）
+py -3 -m venv .venv
+# 如果 Activate.ps1 被阻止（策略），可先临时放行：
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+. .\.venv\Scripts\Activate.ps1
+
+# 4) 安装 matplotlib 并运行绘图脚本
+python -m pip install -U pip
+pip install -r scripts\requirements.txt  # 或: pip install matplotlib
+python scripts\plot_trajectory.py
+
+# 5) 验证输出
+Test-Path build\trajectory.csv
+Test-Path build\trajectory.png
+```
+
+如果不想修改 PowerShell 策略，可以不激活 venv，直接调用 venv 的 python：
+
+```powershell
+& .\.venv\Scripts\python.exe -m pip install -U pip matplotlib
+& .\.venv\Scripts\python.exe scripts\plot_trajectory.py
+```
+
+2) CMD（Windows 命令提示符）
+
+```cmd
+cd /d D:\GitHub\EgoPlanner
+py -3 -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -U pip
+pip install -r scripts\requirements.txt
+python scripts\plot_trajectory.py
+```
+
+3) 一键脚本（仓库提供）
+
+- PowerShell 一键脚本： `scripts/run_all.ps1`（支持参数 `-SkipBuild` 跳过构建）
+- 批处理一键脚本： `scripts/run_all.bat`（支持参数 `-SkipBuild`）
+
+在 PowerShell 或 CMD 中运行任一脚本即可完成整个流程：
+
+```powershell
+# 完整运行（包含配置、构建、运行与绘图）
+.\scripts\run_all.ps1
+
+# 或在 CMD 中
+scripts\run_all.bat
+```
+
+4) 在 VS Code 中的快捷操作
+
+- 打开命令面板（Ctrl+Shift+P）-> 输入 `Run Task` -> 选择：
+  - `CMake: Configure`（执行 cmake -S . -B build）
+  - `CMake: Build Release`（执行 cmake --build build --config Release）
+  - `Run: EgoPlanCore (Release)`（直接运行可执行）
+  - `Plot: Trajectory (Python)`（运行 `python scripts/plot_trajectory.py`，使用当前激活的 Python 环境）
+- 按 F5 可以启动 `Launch EgoPlanCore (Release)`（会触发构建然后运行/调试）
+
+5) 常见故障与提示
+
+- 如果 PowerShell 报 "禁止运行脚本"，请使用 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned` 临时允许，或使用不需激活的直接调用方法（见上文）。
+- 如果 `python` 指向 Windows Store，请使用 `py -3` 来确保使用系统安装的 Python。若遇到 NumPy C-extension 错误，请在 venv 中重新安装依赖而避免全局冲突。
+- `.gitignore` 已包含 `build/` 与 `.venv/`，默认不会将生成文件与虚拟环境提交到仓库。
+
+
 ## 📊 可视化轨迹（在本仓库）
 
 仓库包含一个简单的 Python 绘图脚本用于可视化规划结果：`scripts/plot_trajectory.py`。
